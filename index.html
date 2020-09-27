@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Free Web tutorials">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--Set Title-->
+    <title>Bank - Payroll</title>
+    <!--Link style sheets-->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!--Javascript-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script src="taxBracket.js"></script>
+    <script src="calculator.js"></script>
+
+    <script>
+        function CalculateTaxAndSuper()
+        {
+            //Get income
+            var raw_income = document.getElementById("annualincome").value;
+
+            try{
+                var income = parseInt(raw_income);
+                //Set tax brackets
+                var tax_brackets = new Array(5);
+                tax_brackets[0] = new TaxBracket(0,18200,0);
+                tax_brackets[1] = new TaxBracket(18201,37000,0.19);
+                tax_brackets[2] = new TaxBracket(37001,90000,0.325);
+                tax_brackets[3] = new TaxBracket(90001,180000,0.37);
+                tax_brackets[4] = new TaxBracket(180001,9000000000000000000,0.45);
+                //Get annual tax
+                var tax = Calculator.Tax(tax_brackets, income);
+                if (!isNaN(tax)){ 
+                    tax = formatMoney(tax,2,".",",");
+                    document.getElementById("annual_tax_display").innerHTML = "Annual Tax: <b>$" + tax + "</b>";
+                }else document.getElementById("annual_tax_display").innerHTML = tax;
+
+                //Get annual tax
+                var superannuation = Calculator.Superannuation(income, 9.5);
+                if (!isNaN(superannuation)){ 
+                    superannuation = formatMoney(superannuation,2,".",",");
+                    document.getElementById("annual_super_display").innerHTML = "Annual Superannuation: <b>$" + superannuation + "</b>";
+                }else document.getElementById("annual_super_display").innerHTML = superannuation;
+
+            }catch{
+
+            }
+        }
+
+        //NOT MY CODE
+        function formatMoney(number, decPlaces, decSep, thouSep) {
+            decPlaces = isNaN(decPlaces = Math.abs(decPlaces)) ? 2 : decPlaces,
+            decSep = typeof decSep === "undefined" ? "." : decSep;
+            thouSep = typeof thouSep === "undefined" ? "," : thouSep;
+            var sign = number < 0 ? "-" : "";
+            var i = String(parseInt(number = Math.abs(Number(number) || 0).toFixed(decPlaces)));
+            var j = (j = i.length) > 3 ? j % 3 : 0;
+
+            return sign +
+                (j ? i.substr(0, j) + thouSep : "") +
+                i.substr(j).replace(/(\decSep{3})(?=\decSep)/g, "$1" + thouSep) +
+                (decPlaces ? decSep + Math.abs(number - i).toFixed(decPlaces).slice(2) : "");
+            }
+
+    </script>
+
+</head>
+<body>
+
+    <div class="jumbotron text-center banner" style="margin-bottom:0">
+        <div class="banner-circle-container">
+            <div class="banner-circle-content">
+                <h1>{Bank name}</h1>
+                <h4>Payroll</h4>
+            </div>
+            <div class="banner-circle transparent60 circle"></div> 
+        </div>
+    </div>
+      
+      <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+      </nav>
+      
+      <div class="container" style="margin-top:30px">
+        <form >
+            <div class="row">
+                <div class="col-sm-7">
+                    <h2>Annual Tax & Superannuation Calculator</h2>
+
+                    <div class="input-group mb-3 spaceTop20">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">Annual Salary / Wage</span>
+                          <span class="input-group-text">$</span>
+                        </div>
+                        <input id="annualincome" type="text" class="form-control" name="annalincome"/>
+                    </div>
+                    <button type="button" class="btn btn-primary spaceBottom20" onclick="CalculateTaxAndSuper()">Calculate</button>
+                </div>
+                <div class="col-sm-5">
+                    <div class="jumbotron text-center">
+                        <span id="annual_tax_display" class="spaceBottom5">Annual Tax <b>$0</b></span>
+                        <br/>
+                        <span id="annual_super_display" class="spaceBottom5">Annual Superannuation <b>$0</b></span>
+                    </div>
+                </div>
+            </div>
+        </form>
+      </div>
+      
+      <div class="jumbotron text-center" style="margin-bottom:0">
+        <p>Copyright {bank name}</p>
+      </div>
+
+</body>
